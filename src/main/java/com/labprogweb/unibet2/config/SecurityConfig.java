@@ -65,12 +65,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/api/v2/usuarios/**").permitAll() // Corrigido para incluir a barra inicial
             .antMatchers("/api/v2/administrador/**").hasRole("ADMIN")
             // Cliente endpoints
-            .antMatchers("/api/v2/cliente/**").hasRole("CLIENTE")
+            .antMatchers("/api/v2/cliente/**").hasAnyRole("ADMIN", "CLIENTE")
             // Evento endpoints
+            .antMatchers(HttpMethod.GET,"/api/v2/evento").hasAnyRole("ADMIN", "CLIENTE")
             .antMatchers("/api/v2/evento/**").hasAnyRole("ADMIN")
-                .antMatchers(HttpMethod.GET,"/api/v2/evento").permitAll()
             // Aposta endpoints
             .antMatchers("/api/v2/aposta/**").hasAnyRole("ADMIN", "CLIENTE")
+            .antMatchers("/api/v2/info-bancaria/").hasAnyRole("ADMIN", "CLIENTE")
+            .antMatchers("/api/v2/escolha/**").hasRole("ADMIN")
+            .antMatchers("/api/v2/odds/**").hasRole("ADMIN")
             .anyRequest().authenticated()
             .and()
             .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class); // Certifique-se de que o filtro JWT não bloqueie a solicitação

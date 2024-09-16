@@ -33,6 +33,15 @@ public class InfoBancariaService {
     public List<InfoBancaria> findByClienteId(Long clienteId){
         return repository.findByClienteId(clienteId);
     }
+
+    public InfoBancaria update(Long id, InfoBancaria infoBancaria){
+        Optional<InfoBancaria> optional = repository.findById(id);
+        if(optional.isPresent()){
+            infoBancaria.setId(id);
+            return repository.save(infoBancaria);
+        }
+        return null;
+    }
     
     
 }
