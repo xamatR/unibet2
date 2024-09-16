@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.modelmapper.ModelMapper;
+import com.labprogweb.unibet2.api.dto.EscolhaDTO;
+
 import java.util.Optional;
 import java.util.List;
 
@@ -22,32 +26,47 @@ public class EscolhaController {
     private EscolhaService escolhaService;
 
     @GetMapping
-    public List<Escolha> findAll(){
-        return escolhaService.findAll();
+    public ResponseEntity<List<Escolha>> findAll(){
+        return ResponseEntity.ok(escolhaService.findAll());
     }
 
     @PostMapping
-    public Escolha save(@RequestBody Escolha escolha){
-        return escolhaService.save(escolha);
+    public ResponseEntity<EscolhaDTO> save(@RequestBody EscolhaDTO escolhaDTO){
+        Escolha escolha = convertToEntity(escolhaDTO);
+        return ResponseEntity.ok(convertToDto(escolhaService.save(escolha)));
     }
 
     @PutMapping("/{id}")
-    public Escolha update(@PathVariable Long id, @RequestBody Escolha escolha){
-        return escolhaService.update(id, escolha);
+    public ResponseEntity<EscolhaDTO> update(@PathVariable Long id, @RequestBody EscolhaDTO escolhaDTO){
+        if(!escolhaService.findById(id).isPresent()){
+            return ResponseEntity.notFound().build();
+        }
+        Escolha escolha = convertToEntity(escolhaDTO);
+        escolha.setId(id);  
+        return ResponseEntity.ok(convertToDto(escolhaService.update(id, escolha)));
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id){
+    public ResponseEntity<Void> delete(@PathVariable Long id){
+        
         Escolha escolha = escolhaService.findById(id).orElseThrow(() -> new RuntimeException("Escolha not found"));
         escolhaService.delete(escolha);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
-    public Optional<Escolha> findById(@PathVariable Long id){
-        return escolhaService.findById(id);
+    public ResponseEntity<Optional<EscolhaDTO>> findById(@PathVariable Long id){
+        return ResponseEntity.ok(escolhaService.findById(id).map(this::convertToDto));
     }
 
-    
+    private EscolhaDTO convertToDto(Escolha escolha) {
+        ModelMapper mapper = new ModelMapper();
+        return mapper.map(escolha, EscolhaDTO.class);
+    }
 
+    private Escolha convertToEntity(EscolhaDTO escolhaDTO) {
+        ModelMapper mapper = new ModelMapper();
+        return mapper.map(escolhaDTO, Escolha.class);
+    }   
 
 }

@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import lombok.RequiredArgsConstructor;
 import com.labprogweb.unibet2.service.ApostaService;
 import com.labprogweb.unibet2.Model.entity.Aposta;
-
+import org.springframework.http.ResponseEntity;
 import java.util.List;
+import org.modelmapper.ModelMapper;
 
 
 
@@ -31,16 +32,27 @@ public class ApostaContoller {
     }
 
     @PostMapping
-    public Aposta save(@RequestBody ApostaDTO apostaDTO){
+    public ResponseEntity save(@RequestBody ApostaDTO apostaDTO){
         Aposta aposta = convertToEntity(apostaDTO);
-        return apostaService.save(aposta);
+        return ResponseEntity.ok(apostaService.save(aposta));
     }
 
     @PutMapping("/{id}")
-    public Aposta update(@PathVariable Long id, @RequestBody ApostaDTO apostaDTO){
-        return apostaService.update(id, apostaDTO);
+    public ResponseEntity update(@PathVariable Long id, @RequestBody ApostaDTO apostaDTO){
+        if(!apostaService.findById(id).isPresent()){
+            return ResponseEntity.notFound().build();
+        }
+        Aposta aposta = convertToEntity(apostaDTO);
+        aposta.setId(id);
+        ApostaDTO updatedApostaDTO = convertToDto(aposta);
+        return ResponseEntity.ok(apostaService.update(id, updatedApostaDTO)); 
     }
-    
+
+    // Add this new method to convert Aposta to ApostaDTO
+    private ApostaDTO convertToDto(Aposta aposta) {
+        ModelMapper mapper = new ModelMapper();
+        return mapper.map(aposta, ApostaDTO.class);
+    }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id){
@@ -55,11 +67,7 @@ public class ApostaContoller {
     }
     
     private Aposta convertToEntity(ApostaDTO apostaDTO) {
-        Aposta aposta = new Aposta();
-        
-        aposta.setValor(apostaDTO.getValor());
-        aposta.setData(apostaDTO.getData());
-        aposta.setStatus(apostaDTO.getStatus());
-        return aposta;
+        ModelMapper mapper = new ModelMapper();
+        return mapper.map(apostaDTO, Aposta.class);
     }
 }
