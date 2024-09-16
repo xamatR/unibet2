@@ -62,28 +62,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .authorizeRequests()
-            // Swagger endpoints
-            //.antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/swagger-ui.html", "/webjars/**").permitAll()
-            // Administrator endpoints
+            .antMatchers("/api/v2/usuarios/**").permitAll() // Corrigido para incluir a barra inicial
             .antMatchers("/api/v2/administrador/**").hasRole("ADMIN")
             // Cliente endpoints
             .antMatchers("/api/v2/cliente/**").hasRole("CLIENTE")
             // Evento endpoints
-            .antMatchers("/api/v2/evento/**").hasAnyRole("ADMIN", "CLIENTE")
+            .antMatchers("/api/v2/evento/**").hasAnyRole("ADMIN")
+                .antMatchers(HttpMethod.GET,"/api/v2/evento").permitAll()
             // Aposta endpoints
             .antMatchers("/api/v2/aposta/**").hasAnyRole("ADMIN", "CLIENTE")
-            // Outros endpoints
-            .antMatchers("/api/v2/usuario/**").hasAnyRole("ADMIN", "CLIENTE")
-            .antMatchers("/api/v2/auth/**").permitAll()
-//            .antMatchers("/api/v2/swagger-ui/**").permitAll()
-//            .antMatchers("/api/v2/v3/api-docs/**").permitAll()
-//            .antMatchers("/api/v2/swagger-resources/**").permitAll()
-//            .antMatchers("/api/v2/swagger-ui.html").permitAll()
-//            .antMatchers("/api/v2/webjars/**").permitAll()
-//            .antMatchers("/api/v2/csrf").permitAll()
             .anyRequest().authenticated()
             .and()
-            .addFilterBefore(jwtAuthFilter() , UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class); // Certifique-se de que o filtro JWT não bloqueie a solicitação
     
     }
 
