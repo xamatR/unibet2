@@ -54,7 +54,7 @@ public class UsuarioController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id){
         Usuario usuario = usuarioService.findById(id)
-                .orElseThrow(() -> new RuntimeException("Administrador not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
         usuarioService.delete(usuario.getId());
     }
 

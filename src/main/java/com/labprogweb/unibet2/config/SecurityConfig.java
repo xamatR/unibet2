@@ -59,8 +59,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //Swagger não precisa de autenticação e pode ser acessado por qualquer usuário
         http
             .csrf().disable()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
             .authorizeRequests()
             .antMatchers("/api/v2/usuarios/**").permitAll() // Corrigido para incluir a barra inicial
             .antMatchers("/api/v2/administrador/**").hasRole("ADMIN")
@@ -76,6 +74,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/api/v2/odds/**").hasRole("ADMIN")
             .anyRequest().authenticated()
             .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
             .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class); // Certifique-se de que o filtro JWT não bloqueie a solicitação
     
     }
