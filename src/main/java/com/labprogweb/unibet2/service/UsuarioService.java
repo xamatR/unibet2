@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 @Service
 public class UsuarioService implements UserDetailsService {
@@ -39,6 +40,9 @@ public class UsuarioService implements UserDetailsService {
         }
         throw new UsernameNotFoundException("Senha inválida");
     }
+
+    @Transactional
+    public List<Usuario> findAll(){return repository.findAll();}
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
