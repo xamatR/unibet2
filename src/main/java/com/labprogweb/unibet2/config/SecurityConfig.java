@@ -58,27 +58,46 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //Clientes podem acessar apenas os seus prorprios dados e os dados dos eventos nos quais tem apostas
         //Swagger não precisa de autenticação e pode ser acessado por qualquer usuário
         http
-            .csrf().disable()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            .authorizeRequests()
-            .antMatchers("/api/v2/usuarios/**").permitAll() // Corrigido para incluir a barra inicial
-            .antMatchers("/api/v2/administrador/**").hasRole("ADMIN")
-            // Cliente endpoints
-            .antMatchers("/api/v2/cliente/**").hasAnyRole("ADMIN", "CLIENTE")
-            // Evento endpoints
-            .antMatchers(HttpMethod.GET,"/api/v2/evento").hasAnyRole("ADMIN", "CLIENTE")
-            .antMatchers("/api/v2/evento/**").hasAnyRole("ADMIN")
-            // Aposta endpoints
-            .antMatchers("/api/v2/aposta/**").hasAnyRole("ADMIN", "CLIENTE")
-            .antMatchers("/api/v2/info-bancaria/").hasAnyRole("ADMIN", "CLIENTE")
-            .antMatchers("/api/v2/escolha/**").hasRole("ADMIN")
-            .antMatchers("/api/v2/odds/**").hasRole("ADMIN")
-            .anyRequest().authenticated()
-            .and()
-            .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class); // Certifique-se de que o filtro JWT não bloqueie a solicitação
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                .antMatchers("/swagger-ui.html", "/swagger-resources/**", "/v3/api-docs/**", "/webjars/**").permitAll() // Adicionado para Swagger UI
+                .antMatchers("/api/v2/usuarios/**").permitAll()
+                .antMatchers("/api/v2/administrador/**").hasRole("ADMIN")
+                .antMatchers("/api/v2/cliente/**").hasAnyRole("ADMIN", "CLIENTE")
+                .antMatchers(HttpMethod.GET, "/api/v2/evento").hasAnyRole("ADMIN", "CLIENTE")
+                .antMatchers("/api/v2/evento/**").hasAnyRole("ADMIN")
+                .antMatchers("/api/v2/aposta/**").hasAnyRole("ADMIN", "CLIENTE")
+                .antMatchers("/api/v2/info-bancaria/").hasAnyRole("ADMIN", "CLIENTE")
+                .antMatchers("/api/v2/escolha/**").hasRole("ADMIN")
+                .antMatchers("/api/v2/odds/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+                .and()
+                .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class); // Certifique-se de que o filtro JWT não bloqueie a solicitação
     
     }
+
+//    http
+//            .csrf().disable()
+//            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//            .and()
+//            .authorizeRequests()
+//            .antMatchers("/api/v2/usuarios/**").permitAll() // Corrigido para incluir a barra inicial
+//            .antMatchers("/api/v2/administrador/**").hasRole("ADMIN")
+//    // Cliente endpoints
+//            .antMatchers("/api/v2/cliente/**").hasAnyRole("ADMIN", "CLIENTE")
+//    // Evento endpoints
+//            .antMatchers(HttpMethod.GET,"/api/v2/evento").hasAnyRole("ADMIN", "CLIENTE")
+//            .antMatchers("/api/v2/evento/**").hasAnyRole("ADMIN")
+//    // Aposta endpoints
+//            .antMatchers("/api/v2/aposta/**").hasAnyRole("ADMIN", "CLIENTE")
+//            .antMatchers("/api/v2/info-bancaria/").hasAnyRole("ADMIN", "CLIENTE")
+//            .antMatchers("/api/v2/escolha/**").hasRole("ADMIN")
+//            .antMatchers("/api/v2/odds/**").hasRole("ADMIN")
+//            .anyRequest().authenticated()
+//            .and()
+//            .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class); // Certifique-se de que o filtro JWT não bloqueie a solicitação
 
     @Override
     public void configure(WebSecurity web) throws Exception {
