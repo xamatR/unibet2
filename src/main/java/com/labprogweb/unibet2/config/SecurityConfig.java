@@ -1,6 +1,7 @@
 package com.labprogweb.unibet2.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,7 +33,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
 
-    public SecurityConfig(UserDetailsService userDetailsService) {
+    @Autowired
+    public SecurityConfig(@Qualifier("usuarioService") UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
@@ -62,16 +64,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/swagger-ui.html", "/swagger-resources/**", "/v3/api-docs/**", "/webjars/**").permitAll() // Adicionado para Swagger UI
-                .antMatchers("/api/v2/usuarios/**").permitAll()
-                .antMatchers("/api/v2/administrador/**").hasRole("ADMIN")
-                .antMatchers("/api/v2/cliente/**").hasAnyRole("ADMIN", "CLIENTE")
+                .antMatchers("/api/v2/usuarios/**")
+                    .permitAll()
+                .antMatchers("/api/v2/administrador/**")
+                    .hasRole("ADMIN")
+                .antMatchers("/api/v2/cliente/**")
+                    .hasAnyRole("ADMIN", "CLIENTE")
                 .antMatchers(HttpMethod.GET, "/api/v2/evento").hasAnyRole("ADMIN", "CLIENTE")
-                .antMatchers("/api/v2/evento/**").hasAnyRole("ADMIN")
-                .antMatchers("/api/v2/aposta/**").hasAnyRole("ADMIN", "CLIENTE")
-                .antMatchers("/api/v2/info-bancaria/").hasAnyRole("ADMIN", "CLIENTE")
-                .antMatchers("/api/v2/escolha/**").hasRole("ADMIN")
-                .antMatchers("/api/v2/odds/**").hasRole("ADMIN")
+                .antMatchers("/api/v2/evento/**")
+                    .hasAnyRole("ADMIN")
+                .antMatchers("/api/v2/aposta/**")
+                    .hasAnyRole("ADMIN", "CLIENTE")
+                .antMatchers("/api/v2/info-bancaria/")
+                    .hasAnyRole("ADMIN", "CLIENTE")
+                .antMatchers("/api/v2/escolha/**")
+                    .hasRole("ADMIN")
+                .antMatchers("/api/v2/odds/**")
+                    .hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class); // Certifique-se de que o filtro JWT não bloqueie a solicitação

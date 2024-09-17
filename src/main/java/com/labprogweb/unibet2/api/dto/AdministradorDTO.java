@@ -5,10 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
 import com.labprogweb.unibet2.Model.entity.Administrador;
+import lombok.Builder;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class AdministradorDTO {
     private long id;
     private String nome;

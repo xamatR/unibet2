@@ -1,5 +1,6 @@
 package com.labprogweb.unibet2.service;
 
+// import com.labprogweb.unibet2.exception.SenhaInvalidaException;
 import com.labprogweb.unibet2.Model.entity.Usuario;
 import com.labprogweb.unibet2.Model.Repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,21 +12,21 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UsuarioService implements UserDetailsService {
 
     private final PasswordEncoder encoder;
+    
+    @Autowired
+    private UsuarioRepository repository;
 
     @Autowired
     public UsuarioService(@Lazy PasswordEncoder encoder) {
         this.encoder = encoder;
     }
 
-    @Autowired
-    private UsuarioRepository repository;
 
     @Transactional
     public Usuario salvar(Usuario usuario){
@@ -41,13 +42,6 @@ public class UsuarioService implements UserDetailsService {
         }
         throw new UsernameNotFoundException("Senha inválida");
     }
-
-    @Transactional
-    public List<Usuario> findAll(){return repository.findAll();}
-
-    @Transactional public Optional<Usuario> findById(Integer id){return repository.findById(id);}
-
-    @Transactional public void delete(Integer id){repository.deleteById(id);}
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -65,5 +59,10 @@ public class UsuarioService implements UserDetailsService {
                 .password(usuario.getSenha())
                 .roles(roles)
                 .build();
+    }
+
+    public Optional<Usuario> findByLogin(String login) {
+        return repository.findByLogin(login);
+
     }
 }

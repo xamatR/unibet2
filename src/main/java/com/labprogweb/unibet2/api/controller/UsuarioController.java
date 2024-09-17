@@ -14,7 +14,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/v2/usuarios")
 @RequiredArgsConstructor
-public class UsuarioController {
+public class UsuarioController implements UserDetailsService {
 
     private final UsuarioService usuarioService;
     private final JwtService jwtService;
@@ -51,16 +52,21 @@ public class UsuarioController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id){
-        Usuario usuario = usuarioService.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        usuarioService.delete(usuario.getId());
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        Usuario usuario = usuarioService.findByLogin(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+
+        String[] roles = usuario.isAdmin()
+                ? new String[]{"ADMIN", "CLIENTE"}
+                : new String[]{"CLIENTE"};
+
+        return User
+                .builder()
+                .username(usuario.getLogin())
+                .password(usuario.getSenha())
+                .roles(roles)
+                .build();
     }
-
-    @GetMapping("/findAll")
-    public List<Usuario> findAll(){return usuarioService.findAll();}
-
-
-    
 }
