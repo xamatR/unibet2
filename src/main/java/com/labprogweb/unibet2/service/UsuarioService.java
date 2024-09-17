@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UsuarioService implements UserDetailsService {
@@ -43,6 +44,10 @@ public class UsuarioService implements UserDetailsService {
 
     @Transactional
     public List<Usuario> findAll(){return repository.findAll();}
+
+    @Transactional public Optional<Usuario> findById(Integer id){return repository.findById(id);}
+
+    @Transactional public void delete(Integer id){repository.deleteById(id);}
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

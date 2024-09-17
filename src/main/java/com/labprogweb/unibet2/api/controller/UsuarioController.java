@@ -1,5 +1,6 @@
 package com.labprogweb.unibet2.api.controller;
 
+import com.labprogweb.unibet2.Model.entity.Administrador;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import com.labprogweb.unibet2.service.UsuarioService;
@@ -48,6 +49,13 @@ public class UsuarioController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Integer id){
+        Usuario usuario = usuarioService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Administrador not found"));
+        usuarioService.delete(usuario.getId());
     }
 
     @GetMapping("/findAll")
